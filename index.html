@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelPlanner - Plan Your Perfect Trip</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Home Screen -->
+        <div id="home-screen" class="screen active">
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <i class="fas fa-globe-americas"></i>
+                    <span data-i18n="app.title">TravelPlanner</span>
+                </div>
+                <div class="nav-actions">
+                    <div class="language-switcher">
+                        <button class="btn btn-text" onclick="switchLanguage('en')" id="lang-en">
+                            <i class="fas fa-flag"></i>
+                            EN
+                        </button>
+                        <button class="btn btn-text" onclick="switchLanguage('ru')" id="lang-ru">
+                            <i class="fas fa-flag"></i>
+                            RU
+                        </button>
+                    </div>
+                    <button class="btn btn-primary" onclick="showCreateTrip()">
+                        <i class="fas fa-plus"></i>
+                        <span data-i18n="nav.newTrip">New Trip</span>
+                    </button>
+                </div>
+            </nav>
+
+            <main class="hero-section">
+                <div class="hero-content">
+                    <h1 data-i18n="home.hero.title">Plan Your Dream Adventure</h1>
+                    <p data-i18n="home.hero.subtitle">Create detailed itineraries, manage budgets, and organize every aspect of your journey</p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <span data-i18n="home.hero.stats.anywhere">Plan trips anywhere</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span data-i18n="home.hero.stats.flexible">Flexible duration</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span data-i18n="home.hero.stats.budget">Budget tracking</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-large" onclick="showCreateTrip()">
+                        <i class="fas fa-rocket"></i>
+                        <span data-i18n="home.hero.startButton">Start Planning</span>
+                    </button>
+                </div>
+
+                <div class="hero-image">
+                    <div class="floating-card">
+                        <i class="fas fa-plane"></i>
+                        <span data-i18n="home.hero.floatingCard">Ready to explore?</span>
+                    </div>
+                </div>
+            </main>
+
+            <section class="features-section">
+                <h2 data-i18n="home.features.title">Why Choose TravelPlanner?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-route"></i>
+                        <h3 data-i18n="home.features.itineraries.title">Smart Itineraries</h3>
+                        <p data-i18n="home.features.itineraries.description">Create detailed day-by-day plans with our intuitive template system</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-calculator"></i>
+                        <h3 data-i18n="home.features.budget.title">Budget Management</h3>
+                        <p data-i18n="home.features.budget.description">Track expenses and stay within your travel budget</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-users"></i>
+                        <h3 data-i18n="home.features.group.title">Group Planning</h3>
+                        <p data-i18n="home.features.group.description">Plan trips with friends and family seamlessly</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-cloud"></i>
+                        <h3 data-i18n="home.features.cloud.title">Cloud Sync</h3>
+                        <p data-i18n="home.features.cloud.description">Access your plans from anywhere, anytime</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Create Trip Screen -->
+        <div id="create-trip-screen" class="screen">
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <i class="fas fa-arrow-left"></i>
+                    <button class="btn btn-text" onclick="showHome()" data-i18n="nav.backToHome">Back to Home</button>
+                </div>
+                <div class="nav-actions">
+                    <div class="language-switcher">
+                        <button class="btn btn-text" onclick="switchLanguage('en')" id="lang-en-2">
+                            <i class="fas fa-flag"></i>
+                            EN
+                        </button>
+                        <button class="btn btn-text" onclick="switchLanguage('ru')" id="lang-ru-2">
+                            <i class="fas fa-flag"></i>
+                            RU
+                        </button>
+                    </div>
+                    <button class="btn btn-secondary" onclick="saveTrip()">
+                        <i class="fas fa-save"></i>
+                        <span data-i18n="trip.saveButton">Save Trip</span>
+                    </button>
+                </div>
+            </nav>
+
+            <main class="trip-creator">
+                <div class="trip-header">
+                    <h1 data-i18n="trip.create.title">Create New Trip</h1>
+                    <p data-i18n="trip.create.subtitle">Fill out the details below to start planning your adventure</p>
+                </div>
+
+                <form id="trip-form" class="trip-form">
+                    <div class="form-section">
+                        <h2><i class="fas fa-info-circle"></i> <span data-i18n="trip.form.basicInfo.title">Basic Information</span></h2>
+                        
+                        <div class="form-group">
+                            <label for="trip-name" data-i18n="trip.form.basicInfo.tripName">Trip Name *</label>
+                            <input type="text" id="trip-name" name="tripName" required data-i18n-placeholder="trip.form.basicInfo.tripNamePlaceholder">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="destination" data-i18n="trip.form.basicInfo.destination">Where are we going? *</label>
+                                <input type="text" id="destination" name="destination" required data-i18n-placeholder="trip.form.basicInfo.destinationPlaceholder">
+                            </div>
+                            <div class="form-group">
+                                <label for="trip-type" data-i18n="trip.form.basicInfo.tripType">Trip Type</label>
+                                <select id="trip-type" name="tripType">
+                                    <option value="vacation" data-i18n="trip.form.basicInfo.tripTypes.vacation">Vacation</option>
+                                    <option value="business" data-i18n="trip.form.basicInfo.tripTypes.business">Business</option>
+                                    <option value="adventure" data-i18n="trip.form.basicInfo.tripTypes.adventure">Adventure</option>
+                                    <option value="cultural" data-i18n="trip.form.basicInfo.tripTypes.cultural">Cultural</option>
+                                    <option value="relaxation" data-i18n="trip.form.basicInfo.tripTypes.relaxation">Relaxation</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="start-date" data-i18n="trip.form.basicInfo.startDate">Start Date *</label>
+                                <input type="date" id="start-date" name="startDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="duration" data-i18n="trip.form.basicInfo.duration">How many days? *</label>
+                                <input type="number" id="duration" name="duration" min="1" max="365" required data-i18n-placeholder="trip.form.basicInfo.durationPlaceholder">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2><i class="fas fa-dollar-sign"></i> <span data-i18n="trip.form.budget.title">Budget & Costs</span></h2>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="total-budget" data-i18n="trip.form.budget.totalBudget">What's the budget? *</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <input type="number" id="total-budget" name="totalBudget" min="0" step="0.01" required data-i18n-placeholder="trip.form.budget.totalBudgetPlaceholder">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="currency" data-i18n="trip.form.budget.currency">Currency</label>
+                                <select id="currency" name="currency">
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                    <option value="JPY">JPY (¥)</option>
+                                    <option value="CAD">CAD (C$)</option>
+                                    <option value="RUB">RUB (₽)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="budget-breakdown">
+                            <h3 data-i18n="trip.form.budget.breakdown.title">Budget Breakdown</h3>
+                            <div class="budget-items">
+                                <div class="budget-item">
+                                    <label for="accommodation-budget" data-i18n="trip.form.budget.breakdown.accommodation">Accommodation</label>
+                                    <input type="number" id="accommodation-budget" name="accommodationBudget" min="0" step="0.01" data-i18n-placeholder="trip.form.budget.breakdown.accommodationPlaceholder">
+                                </div>
+                                <div class="budget-item">
+                                    <label for="transportation-budget" data-i18n="trip.form.budget.breakdown.transportation">Transportation</label>
+                                    <input type="number" id="transportation-budget" name="transportationBudget" min="0" step="0.01" data-i18n-placeholder="trip.form.budget.breakdown.transportationPlaceholder">
+                                </div>
+                                <div class="budget-item">
+                                    <label for="food-budget" data-i18n="trip.form.budget.breakdown.food">Food & Dining</label>
+                                    <input type="number" id="food-budget" name="foodBudget" min="0" step="0.01" data-i18n-placeholder="trip.form.budget.breakdown.foodPlaceholder">
+                                </div>
+                                <div class="budget-item">
+                                    <label for="activities-budget" data-i18n="trip.form.budget.breakdown.activities">Activities & Entertainment</label>
+                                    <input type="number" id="activities-budget" name="activitiesBudget" min="0" step="0.01" data-i18n-placeholder="trip.form.budget.breakdown.activitiesPlaceholder">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2><i class="fas fa-users"></i> <span data-i18n="trip.form.travelers.title">Travelers & Accommodation</span></h2>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="travelers-count" data-i18n="trip.form.travelers.count">Number of Travelers</label>
+                                <input type="number" id="travelers-count" name="travelersCount" min="1" max="20" data-i18n-placeholder="trip.form.travelers.countPlaceholder">
+                            </div>
+                            <div class="form-group">
+                                <label for="accommodation-type" data-i18n="trip.form.travelers.accommodationType">Preferred Accommodation</label>
+                                <select id="accommodation-type" name="accommodationType">
+                                    <option value="hotel" data-i18n="trip.form.travelers.accommodationTypes.hotel">Hotel</option>
+                                    <option value="hostel" data-i18n="trip.form.travelers.accommodationTypes.hostel">Hostel</option>
+                                    <option value="airbnb" data-i18n="trip.form.travelers.accommodationTypes.airbnb">Airbnb</option>
+                                    <option value="resort" data-i18n="trip.form.travelers.accommodationTypes.resort">Resort</option>
+                                    <option value="camping" data-i18n="trip.form.travelers.accommodationTypes.camping">Camping</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="special-requirements" data-i18n="trip.form.travelers.specialRequirements">Special Requirements</label>
+                            <textarea id="special-requirements" name="specialRequirements" rows="3" data-i18n-placeholder="trip.form.travelers.specialRequirementsPlaceholder"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2><i class="fas fa-route"></i> <span data-i18n="trip.form.details.title">Trip Details & Notes</span></h2>
+                        
+                        <div class="form-group">
+                            <label for="trip-description" data-i18n="trip.form.details.description">Trip Description</label>
+                            <textarea id="trip-description" name="tripDescription" rows="4" data-i18n-placeholder="trip.form.details.descriptionPlaceholder"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="must-see" data-i18n="trip.form.details.mustSee">Must-See Attractions</label>
+                            <textarea id="must-see" name="mustSee" rows="3" data-i18n-placeholder="trip.form.details.mustSeePlaceholder"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="additional-notes" data-i18n="trip.form.details.additionalNotes">Additional Notes</label>
+                            <textarea id="additional-notes" name="additionalNotes" rows="3" data-i18n-placeholder="trip.form.details.additionalNotesPlaceholder"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="showHome()" data-i18n="trip.form.actions.cancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i>
+                            <span data-i18n="trip.form.actions.create">Create Trip</span>
+                        </button>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
