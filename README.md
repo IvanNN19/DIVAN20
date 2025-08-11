@@ -11,176 +11,59 @@ A beautiful, modern web application for planning and organizing your travel adve
 - **Cultural Adaptation**: Russian ruble (₽) currency support
 
 ### 🏠 **Home Screen**
-- **Beautiful Hero Section**: Eye-catching design with gradient backgrounds and floating elements
-- **Feature Highlights**: Showcases the app's capabilities with animated cards
-- **Quick Access**: One-click navigation to create new trips
-- **Responsive Design**: Works perfectly on all devices
+- **Calmer & brighter** palette with higher contrast
+- **Feature Highlights** with subtle cards
+- **My Trips** section shows saved trips
+- **Quick Access** to create new trips
 
-### 🚀 **Trip Creation Interface**
-- **Comprehensive Template**: Structured form covering all essential trip details
-- **Smart Validation**: Ensures all required information is provided
-- **Budget Management**: Track total budget and break down by category
-- **Flexible Planning**: Support for various trip types and durations
+### 🧭 **Trip Creation & Editing**
+- **Create Trip**: comprehensive template covering all essentials
+- **After Creation**: editing page with
+  - Basic information (summary card)
+  - Main notes editor
+  - "Important" list to track key items
+- **Budget tools** and validation
 
-### 📝 **Trip Planning Template Includes**
+## 🔐 Data Storage (FastAPI + PostgreSQL)
 
-#### Basic Information
-- Trip name and destination
-- Trip type (vacation, business, adventure, cultural, relaxation)
-- Start date and duration
-- Number of travelers
+Trips are now persisted to a local PostgreSQL database via a FastAPI backend.
 
-#### Budget & Costs
-- Total budget with currency selection (including RUB ₽)
-- Detailed budget breakdown:
-  - Accommodation
-  - Transportation
-  - Food & Dining
-  - Activities & Entertainment
-- Automatic budget validation
+### Run the database (Docker)
+```bash
+docker compose up -d db
+```
 
-#### Travel Details
-- Preferred accommodation type
-- Special requirements and accessibility needs
-- Trip description and goals
-- Must-see attractions
-- Additional notes and reminders
+### Run the backend API
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+# optional: cp .env.example .env and edit
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+API: `http://localhost:8000`
 
-## 🎯 **Key Benefits**
+Frontend calls the API directly. If you open `index.html` from file://, CORS is configured to allow it.
 
-- **User-Friendly**: Intuitive interface that's easy to navigate
-- **Comprehensive**: Covers all aspects of trip planning
-- **Responsive**: Works seamlessly on desktop, tablet, and mobile
-- **Modern Design**: Beautiful gradients, animations, and visual feedback
-- **Data Persistence**: Saves your trips locally in the browser
-- **Smart Validation**: Prevents errors and guides users through the process
-- **Multilingual**: Accessible to English and Russian speakers
+## 📋 API Summary
+- `POST /trips/` – create a trip
+- `GET /trips/` – list trips
+- `GET /trips/{id}` – get details
+- `PATCH /trips/{id}` – update notes and important items
 
-## 🚀 **Getting Started**
+## 🖌 Design
+- Softer background, brighter surfaces, higher text contrast
+- Clear cards for hero and features
+- Consistent typography and spacing
 
-### Prerequisites
-- A modern web browser (Chrome, Firefox, Safari, Edge)
-- No additional software or installations required
-
-### Installation
-1. Download or clone the repository
-2. Open `index.html` in your web browser
-3. Start planning your next adventure!
-
-### How to Use
-
-#### Language Selection
-1. **Choose Your Language**: Use the EN/RU buttons in the navigation bar
-2. **Persistent Settings**: Your language choice is automatically saved
-3. **Full Localization**: All content, forms, and notifications in your selected language
-
-#### Creating a New Trip
-1. **Navigate to Home**: Start at the beautiful home screen
-2. **Click "New Trip"**: Use the button in the navigation or hero section
-3. **Fill Out the Form**: Complete all required fields marked with *
-4. **Add Details**: Provide additional information for better planning
-5. **Save Your Trip**: Click "Create Trip" to save your plan
-
-#### Required Fields
-- Trip Name
-- Destination
-- Start Date
-- Duration (in days)
-- Total Budget
-
-#### Optional Fields
-- Trip Type
-- Currency
-- Budget Breakdown
-- Number of Travelers
-- Accommodation Preferences
-- Special Requirements
-- Trip Description
-- Must-See Attractions
-- Additional Notes
-
-## 🎨 **Design Features**
-
-- **Modern UI/UX**: Clean, professional design with smooth animations
-- **Color Scheme**: Beautiful gradient backgrounds and consistent color palette
-- **Typography**: Inter font family for excellent readability
-- **Icons**: Font Awesome icons for visual appeal
-- **Responsive Grid**: Adapts to different screen sizes
-- **Smooth Transitions**: Hover effects and animations throughout
-- **Language Switcher**: Elegant language toggle buttons with active states
-
-## 🔧 **Technical Details**
-
-- **Frontend Only**: Pure HTML, CSS, and JavaScript
-- **No Dependencies**: Self-contained application
-- **Local Storage**: Saves data and language preferences in the browser
-- **Responsive Design**: Mobile-first approach
-- **Cross-Browser Compatible**: Works on all modern browsers
-- **Internationalization**: Complete i18n system with translation keys
-
-## 📱 **Responsive Design**
-
-The application is fully responsive and optimized for:
-- **Desktop**: Full-featured experience with side-by-side layouts
-- **Tablet**: Adapted layouts for medium screens
-- **Mobile**: Optimized for small screens with stacked elements
-
-## ⌨️ **Keyboard Shortcuts**
-
-- **Ctrl/Cmd + Enter**: Save trip (when on create trip screen)
-- **Escape**: Return to home screen
-
-## 🌍 **Language Support**
-
-### English (EN)
-- Full application interface
-- All form fields and labels
-- Notifications and error messages
-- Sample trip data
-
-### Russian (RU)
-- Полный интерфейс приложения
-- Все поля форм и подписи
-- Уведомления и сообщения об ошибках
-- Пример данных поездки
-- Поддержка рубля (₽) в валютах
-
-## 🎯 **Future Enhancements**
-
-Potential features for future versions:
-- Additional languages (Spanish, French, German, etc.)
-- Trip sharing and collaboration
-- Export to PDF/Calendar
-- Integration with travel APIs
-- Photo and document attachments
-- Trip templates and suggestions
-- Expense tracking during trips
-- Weather integration
-- Map integration
-
-## 🤝 **Contributing**
-
-Feel free to contribute to this project by:
-- Reporting bugs
-- Suggesting new features
-- Improving the design
-- Adding new functionality
-- Contributing translations for additional languages
-
-## 📄 **License**
-
-This project is open source and available under the MIT License.
-
-## 🚀 **Demo**
-
-Open `index.html` in your browser to see the application in action. The app includes:
-- Sample trip data in both languages
-- Full multilingual interface
-- Language switching functionality
-- Persistent language preferences
+## 🚀 Getting Started
+1. Start DB and backend (above)
+2. Open `index.html` in your browser
+3. Create a trip and then edit it from "My Trips"
 
 ---
 
 **Happy Travel Planning! ✈️🌍**
 
-**Счастливого планирования путешествий! ✈️🌍** # DIVAN20
+**Счастливого планирования путешествий! ✈️🌍**
