@@ -93,9 +93,21 @@ const translations = {
             },
             detail: {
                 saveChanges: "Save Changes",
-                notes: { title: "Notes", placeholder: "Write your plans, ideas, packing list, etc." },
-                important: { title: "Important", add: "Add", placeholder: "Add important item..." },
-                basic: { title: "Basic information" }
+                share: "Share",
+                edit: "Edit Trip",
+                notes: { title: "Notes & Plans", placeholder: "Write your plans, ideas, packing list, etc." },
+                important: { title: "Important Items", add: "Add", placeholder: "Add important item..." },
+                basic: { title: "Trip Details" },
+                flightTickets: { title: "Flight Tickets" },
+                budget: { title: "Budget Overview" },
+                sharing: {
+                    title: "Share Trip",
+                    description: "Share this trip with friends and family",
+                    copy: "Copy Link",
+                    email: "Email",
+                    whatsapp: "WhatsApp",
+                    telegram: "Telegram"
+                }
             }
         },
         notifications: {
@@ -173,9 +185,21 @@ const translations = {
             },
             detail: {
                 saveChanges: "Сохранить изменения",
-                notes: { title: "Заметки", placeholder: "Пишите планы, идеи, список вещей и т.д." },
-                important: { title: "Важно", add: "Добавить", placeholder: "Добавьте важный пункт..." },
-                basic: { title: "Основная информация" }
+                share: "Поделиться",
+                edit: "Редактировать",
+                notes: { title: "Заметки и Планы", placeholder: "Пишите планы, идеи, список вещей и т.д." },
+                important: { title: "Важные Пункты", add: "Добавить", placeholder: "Добавьте важный пункт..." },
+                basic: { title: "Детали Поездки" },
+                flightTickets: { title: "Билеты на Самолет" },
+                budget: { title: "Обзор Бюджета" },
+                sharing: {
+                    title: "Поделиться Поездкой",
+                    description: "Поделитесь этой поездкой с друзьями и семьей",
+                    copy: "Копировать Ссылку",
+                    email: "Email",
+                    whatsapp: "WhatsApp",
+                    telegram: "Telegram"
+                }
             }
         },
         notifications: {
@@ -294,6 +318,8 @@ function showCreateTrip(tripData = null) {
 
 function showTripDetail(trip) {
     selectedTripId = trip.id;
+    currentTripData = trip; // Store current trip data for reference
+    
     homeScreen.classList.remove('active');
     createTripScreen.classList.remove('active');
     tripDetailScreen.classList.add('active');
@@ -303,16 +329,86 @@ function showTripDetail(trip) {
 
     document.getElementById('detail-notes').value = trip.notes || '';
 
+    // Display trip meta information
+    displayTripMeta(trip);
+
+    // Display flight tickets if available
+    if (trip.flightTickets && trip.flightTickets.length > 0) {
+        displayFlightTickets(trip.flightTickets);
+    }
+
+    // Display budget overview
+    displayBudgetOverview(trip);
+
+    // Update basic information
     const basic = document.getElementById('detail-basic');
     basic.innerHTML = `
-        <div class="card" style="padding:0.75rem;">
-            <div><strong>${t('trip.form.basicInfo.tripName').replace(' *','')}:</strong> ${trip.tripName}</div>
-            <div><strong>${t('trip.form.basicInfo.destination').replace(' *','')}:</strong> ${trip.destination}</div>
-            <div><strong>${t('trip.form.basicInfo.tripType')}:</strong> ${trip.tripType || '-'}</div>
-            <div><strong>${t('trip.form.basicInfo.startDate').replace(' *','')}:</strong> ${trip.startDate}</div>
-            <div><strong>${t('trip.form.basicInfo.duration').replace(' *','')}:</strong> ${trip.duration}</div>
-            <div><strong>${t('trip.form.budget.totalBudget').replace(' *','')}:</strong> ${trip.totalBudget} ${trip.currency || ''}</div>
+        <div class="basic-info-grid">
+            <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div class="info-content">
+                    <span class="info-label">${t('trip.form.basicInfo.destination').replace(' *','')}</span>
+                    <span class="info-value">${trip.destination}</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-calendar"></i>
+                <div class="info-content">
+                    <span class="info-label">${t('trip.form.basicInfo.startDate').replace(' *','')}</span>
+                    <span class="info-value">${trip.startDate}</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-clock"></i>
+                <div class="info-content">
+                    <span class="info-label">${t('trip.form.basicInfo.duration').replace(' *','')}</span>
+                    <span class="info-value">${trip.duration} days</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-tag"></i>
+                <div class="info-content">
+                    <span class="info-label">${t('trip.form.basicInfo.tripType')}</span>
+                    <span class="info-value">${trip.tripType || 'Not specified'}</span>
+                </div>
+            </div>
+            ${trip.travelersCount ? `
+            <div class="info-item">
+                <i class="fas fa-users"></i>
+                <div class="info-content">
+                    <span class="info-label">${t('trip.form.travelers.count')}</span>
+                    <span class="info-value">${trip.travelersCount}</span>
+                </div>
+            </div>
+            ` : ''}
+            ${trip.accommodationType ? `
+            <div class="info-item">
+                <i class="fas fa-bed"></i>
+                <div class="info-content">
+                    <span class="info-label">${t('trip.form.travelers.accommodationType')}</span>
+                    <span class="info-value">${trip.accommodationType}</span>
+                </div>
+            </div>
+            ` : ''}
         </div>
+        ${trip.tripDescription ? `
+        <div class="trip-description-section">
+            <h4>${t('trip.form.details.description')}</h4>
+            <p>${trip.tripDescription}</p>
+        </div>
+        ` : ''}
+        ${trip.mustSee ? `
+        <div class="must-see-section">
+            <h4>${t('trip.form.details.mustSee')}</h4>
+            <p>${trip.mustSee}</p>
+        </div>
+        ` : ''}
+        ${trip.additionalNotes ? `
+        <div class="additional-notes-section">
+            <h4>${t('trip.form.details.additionalNotes')}</h4>
+            <p>${trip.additionalNotes}</p>
+        </div>
+        ` : ''}
     `;
 
     const list = document.getElementById('important-list');
@@ -322,10 +418,16 @@ function showTripDetail(trip) {
         el.className = 'important-item';
         el.innerHTML = `<span>${item.content}</span>
             <div class="important-actions">
-                <button class="btn btn-text" onclick="removeImportantItem(${item.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-text" onclick="this.closest('.important-item').remove()" title="Delete"><i class="fas fa-trash"></i></button>
             </div>`;
         list.appendChild(el);
     });
+
+    // Generate and set share link
+    const shareLinkInput = document.getElementById('share-link');
+    if (shareLinkInput) {
+        shareLinkInput.value = generateShareLink(trip.id);
+    }
 }
 
 // Form Management
@@ -384,6 +486,12 @@ function collectTripData() {
 
     // Add flight ticket data
     tripData.flightTickets = getFlightTicketsData();
+    
+    // Add budget breakdown data
+    tripData.accommodationBudget = parseFloat(document.getElementById('accommodation-budget')?.value) || 0;
+    tripData.transportationBudget = parseFloat(document.getElementById('transportation-budget')?.value) || 0;
+    tripData.foodBudget = parseFloat(document.getElementById('food-budget')?.value) || 0;
+    tripData.activitiesBudget = parseFloat(document.getElementById('activities-budget')?.value) || 0;
 
     return tripData;
 }
@@ -407,6 +515,10 @@ async function saveTrip() {
         mustSee: td.mustSee || null,
         additionalNotes: td.additionalNotes || null,
         flightTickets: td.flightTickets || [],
+        accommodationBudget: td.accommodationBudget || 0,
+        transportationBudget: td.transportationBudget || 0,
+        foodBudget: td.foodBudget || 0,
+        activitiesBudget: td.activitiesBudget || 0,
         notes: '',
         important: [],
     };
@@ -714,9 +826,211 @@ function populateFormWithTripData(trip) {
     document.getElementById('must-see').value = trip.mustSee || '';
     document.getElementById('additional-notes').value = trip.additionalNotes || '';
     
+    // Populate budget breakdown fields
+    const accommodationBudgetField = document.getElementById('accommodation-budget');
+    const transportationBudgetField = document.getElementById('transportation-budget');
+    const foodBudgetField = document.getElementById('food-budget');
+    const activitiesBudgetField = document.getElementById('activities-budget');
+    
+    if (accommodationBudgetField) accommodationBudgetField.value = trip.accommodationBudget || '';
+    if (transportationBudgetField) transportationBudgetField.value = trip.transportationBudget || '';
+    if (foodBudgetField) foodBudgetField.value = trip.foodBudget || '';
+    if (activitiesBudgetField) activitiesBudgetField.value = trip.activitiesBudget || '';
+    
     // Load flight tickets
     if (trip.flightTickets) {
         loadFlightTicketsData(trip.flightTickets);
+    }
+}
+
+// Enhanced Trip Display Functions
+function displayFlightTickets(tickets) {
+    const display = document.getElementById('flight-tickets-display');
+    const list = document.getElementById('flight-tickets-list');
+    
+    if (!display || !list) return;
+    
+    if (!tickets || tickets.length === 0) {
+        display.style.display = 'none';
+        return;
+    }
+    
+    display.style.display = 'block';
+    list.innerHTML = '';
+    
+    tickets.forEach((ticket, index) => {
+        const ticketElement = document.createElement('div');
+        ticketElement.className = 'flight-ticket-display-item';
+        ticketElement.innerHTML = `
+            <div class="ticket-header">
+                <span class="passenger-name">${ticket.passengerName || 'Unknown Passenger'}</span>
+                <span class="ticket-cost">${ticket.ticketCost ? `${ticket.ticketCost} ${currentTripData.currency || 'USD'}` : 'Cost not specified'}</span>
+            </div>
+            ${ticket.ticketLink ? `<div class="ticket-link"><a href="${ticket.ticketLink}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> View Ticket</a></div>` : ''}
+        `;
+        list.appendChild(ticketElement);
+    });
+}
+
+function displayBudgetOverview(trip) {
+    const budgetOverview = document.getElementById('budget-overview');
+    if (!budgetOverview) return;
+    
+    const totalBudget = trip.totalBudget || 0;
+    const accommodation = trip.accommodationBudget || 0;
+    const transportation = trip.transportationBudget || 0;
+    const food = trip.foodBudget || 0;
+    const activities = trip.activitiesBudget || 0;
+    const flightTotal = trip.flightTickets ? trip.flightTickets.reduce((sum, ticket) => sum + (ticket.ticketCost || 0), 0) : 0;
+    
+    const totalSpent = accommodation + transportation + food + activities + flightTotal;
+    const remaining = totalBudget - totalSpent;
+    
+    budgetOverview.innerHTML = `
+        <div class="budget-summary">
+            <div class="budget-item">
+                <span class="budget-label">Total Budget</span>
+                <span class="budget-amount total">${totalBudget.toFixed(2)} ${trip.currency || 'USD'}</span>
+            </div>
+            <div class="budget-item">
+                <span class="budget-label">Accommodation</span>
+                <span class="budget-amount">${accommodation.toFixed(2)} ${trip.currency || 'USD'}</span>
+            </div>
+            <div class="budget-item">
+                <span class="budget-label">Transportation</span>
+                <span class="budget-amount">${transportation.toFixed(2)} ${trip.currency || 'USD'}</span>
+            </div>
+            <div class="budget-item">
+                <span class="budget-label">Food & Dining</span>
+                <span class="budget-amount">${food.toFixed(2)} ${trip.currency || 'USD'}</span>
+            </div>
+            <div class="budget-item">
+                <span class="budget-label">Activities</span>
+                <span class="budget-amount">${activities.toFixed(2)} ${trip.currency || 'USD'}</span>
+            </div>
+            <div class="budget-item">
+                <span class="budget-label">Flight Tickets</span>
+                <span class="budget-amount">${flightTotal.toFixed(2)} ${trip.currency || 'USD'}</span>
+            </div>
+            <div class="budget-item total">
+                <span class="budget-label">Total Spent</span>
+                <span class="budget-amount">${totalSpent.toFixed(2)} ${trip.currency || 'USD'}</span>
+            </div>
+            <div class="budget-item ${remaining >= 0 ? 'positive' : 'negative'}">
+                <span class="budget-label">Remaining</span>
+                <span class="budget-amount">${remaining.toFixed(2)} ${trip.currency || 'USD'}</span>
+            </div>
+        </div>
+    `;
+}
+
+function displayTripMeta(trip) {
+    // Update trip meta information in header
+    const budgetDisplay = document.getElementById('trip-budget-amount');
+    const durationDisplay = document.getElementById('trip-duration-amount');
+    const typeDisplay = document.getElementById('trip-type-amount');
+    
+    if (budgetDisplay) budgetDisplay.textContent = `${trip.totalBudget} ${trip.currency || 'USD'}`;
+    if (durationDisplay) durationDisplay.textContent = `${trip.duration} days`;
+    if (typeDisplay) typeDisplay.textContent = trip.tripType || 'Not specified';
+}
+
+// Sharing Functionality
+function generateShareLink(tripId) {
+    const currentUrl = window.location.origin + window.location.pathname;
+    return `${currentUrl}?trip=${tripId}&view=shared`;
+}
+
+function shareTrip() {
+    if (!selectedTripId) return;
+    
+    const shareLink = generateShareLink(selectedTripId);
+    const shareLinkInput = document.getElementById('share-link');
+    
+    if (shareLinkInput) {
+        shareLinkInput.value = shareLink;
+        shareLinkInput.select();
+    }
+    
+    // Show sharing section
+    const sharingSection = document.querySelector('.sharing-section');
+    if (sharingSection) {
+        sharingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function copyShareLink() {
+    const shareLinkInput = document.getElementById('share-link');
+    if (!shareLinkInput) return;
+    
+    shareLinkInput.select();
+    document.execCommand('copy');
+    
+    // Show success notification
+    showNotification(currentLanguage === 'ru' ? 'Ссылка скопирована!' : 'Link copied!', 'success');
+}
+
+function shareViaEmail() {
+    if (!selectedTripId) return;
+    
+    const trip = currentTrips.find(t => t.id === selectedTripId);
+    if (!trip) return;
+    
+    const subject = encodeURIComponent(`Trip: ${trip.tripName} to ${trip.destination}`);
+    const body = encodeURIComponent(`Check out this trip: ${generateShareLink(selectedTripId)}`);
+    
+    window.open(`mailto:?subject=${subject}&body=${body}`);
+}
+
+function shareViaWhatsApp() {
+    if (!selectedTripId) return;
+    
+    const shareLink = generateShareLink(selectedTripId);
+    const text = encodeURIComponent(`Check out this trip: ${shareLink}`);
+    
+    window.open(`https://wa.me/?text=${text}`);
+}
+
+function shareViaTelegram() {
+    if (!selectedTripId) return;
+    
+    const shareLink = generateShareLink(selectedTripId);
+    const text = encodeURIComponent(`Check out this trip: ${shareLink}`);
+    
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${text}`);
+}
+
+// Trip Detail Enhancement Functions
+function toggleNotesEdit() {
+    const notesEditor = document.getElementById('detail-notes');
+    const toggleBtn = document.getElementById('notes-edit-toggle');
+    
+    if (notesEditor.readOnly) {
+        notesEditor.readOnly = false;
+        notesEditor.focus();
+        toggleBtn.innerHTML = '<i class="fas fa-save"></i>';
+        toggleBtn.onclick = saveNotesEdit;
+    } else {
+        saveNotesEdit();
+    }
+}
+
+function saveNotesEdit() {
+    const notesEditor = document.getElementById('detail-notes');
+    const toggleBtn = document.getElementById('notes-edit-toggle');
+    
+    notesEditor.readOnly = true;
+    toggleBtn.innerHTML = '<i class="fas fa-edit"></i>';
+    toggleBtn.onclick = toggleNotesEdit;
+    
+    // Auto-save notes
+    saveTripDetails();
+}
+
+function editTrip() {
+    const trip = currentTrips.find(t => t.id === selectedTripId);
+    if (trip) {
+        showCreateTrip(trip);
     }
 }
 
@@ -733,11 +1047,56 @@ document.addEventListener('DOMContentLoaded', function() {
         initialTicketCost.addEventListener('input', updateFlightTotal);
     }
 
+    // Handle URL parameters for shared trips
+    handleSharedTrip();
+
     setDefaultDates();
     updateLanguageButtons();
     applyTranslations();
     loadTrips();
 });
+
+// Handle shared trip URLs
+function handleSharedTrip() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tripId = urlParams.get('trip');
+    const view = urlParams.get('view');
+    
+    if (tripId && view === 'shared') {
+        // Load the shared trip
+        loadSharedTrip(tripId);
+    }
+}
+
+async function loadSharedTrip(tripId) {
+    try {
+        const trip = await apiRequest(`/trips/${tripId}`);
+        showSharedTrip(trip);
+    } catch (e) {
+        showNotification('Trip not found or unavailable', 'error');
+        setTimeout(() => showHome(), 2000);
+    }
+}
+
+function showSharedTrip(trip) {
+    // Show trip in read-only mode
+    selectedTripId = trip.id;
+    currentTripData = trip;
+    
+    homeScreen.classList.remove('active');
+    createTripScreen.classList.remove('active');
+    tripDetailScreen.classList.add('active');
+    
+    // Hide edit buttons for shared view
+    const editButtons = document.querySelectorAll('.btn[onclick*="edit"], .btn[onclick*="save"]');
+    editButtons.forEach(btn => btn.style.display = 'none');
+    
+    // Show trip details
+    showTripDetail(trip);
+    
+    // Update page title
+    document.title = `Shared Trip: ${trip.tripName} - ${trip.destination}`;
+}
 
 // Shortcuts
 document.addEventListener('keydown', function(e) {

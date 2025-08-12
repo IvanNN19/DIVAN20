@@ -333,6 +333,10 @@
                             RU
                         </button>
                     </div>
+                    <button class="btn btn-primary" onclick="shareTrip()" id="share-trip-btn">
+                        <i class="fas fa-share-alt"></i>
+                        <span data-i18n="trip.detail.share">Share</span>
+                    </button>
                     <button class="btn btn-secondary" onclick="saveTripDetails()">
                         <i class="fas fa-save"></i>
                         <span data-i18n="trip.detail.saveChanges">Save Changes</span>
@@ -342,32 +346,120 @@
 
             <main class="trip-detail">
                 <div class="trip-header">
-                    <h1 id="detail-title">—</h1>
-                    <p id="detail-subtitle" class="text-muted"></p>
+                    <div class="trip-header-content">
+                        <h1 id="detail-title">—</h1>
+                        <p id="detail-subtitle" class="text-muted"></p>
+                        <div class="trip-meta">
+                            <span class="trip-meta-item" id="trip-budget-display">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span id="trip-budget-amount">—</span>
+                            </span>
+                            <span class="trip-meta-item" id="trip-duration-display">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span id="trip-duration-amount">—</span>
+                            </span>
+                            <span class="trip-meta-item" id="trip-type-display">
+                                <i class="fas fa-tag"></i>
+                                <span id="trip-type-amount">—</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="trip-header-actions">
+                        <button class="btn btn-secondary" onclick="editTrip()">
+                            <i class="fas fa-edit"></i>
+                            <span data-i18n="trip.detail.edit">Edit Trip</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="detail-grid">
-                    <section class="card">
-                        <h3 data-i18n="trip.detail.notes.title">Notes</h3>
-                        <textarea id="detail-notes" class="notes-editor" placeholder=""></textarea>
-                    </section>
-
-                    <aside class="card">
-                        <h3 data-i18n="trip.detail.important.title">Important</h3>
-                        <div class="important-list" id="important-list"></div>
-                        <div class="form-group" style="margin-top:0.75rem;">
-                            <input id="important-input" type="text" class="" placeholder="">
-                            <div class="form-actions" style="justify-content:flex-start;padding-top:0.5rem;border-top:none;">
-                                <button class="btn btn-secondary" onclick="addImportantItem()">
-                                    <i class="fas fa-plus"></i>
-                                    <span data-i18n="trip.detail.important.add">Add</span>
+                    <div class="detail-main">
+                        <section class="card notes-section">
+                            <div class="card-header">
+                                <h3><i class="fas fa-sticky-note"></i> <span data-i18n="trip.detail.notes.title">Notes & Plans</span></h3>
+                                <button class="btn btn-text" onclick="toggleNotesEdit()" id="notes-edit-toggle">
+                                    <i class="fas fa-edit"></i>
                                 </button>
                             </div>
-                        </div>
-                        <h3 style="margin-top:1rem;" data-i18n="trip.detail.basic.title">Basic information</h3>
-                        <div id="detail-basic" class="">
-                            <!-- Filled dynamically -->
-                        </div>
+                            <div class="notes-content">
+                                <textarea id="detail-notes" class="notes-editor" placeholder="" readonly></textarea>
+                            </div>
+                        </section>
+
+                        <section class="card flight-tickets-display" id="flight-tickets-display" style="display: none;">
+                            <div class="card-header">
+                                <h3><i class="fas fa-plane"></i> <span data-i18n="trip.detail.flightTickets.title">Flight Tickets</span></h3>
+                            </div>
+                            <div class="flight-tickets-list" id="flight-tickets-list">
+                                <!-- Flight tickets will be populated here -->
+                            </div>
+                        </section>
+
+                        <section class="card budget-section">
+                            <div class="card-header">
+                                <h3><i class="fas fa-chart-pie"></i> <span data-i18n="trip.detail.budget.title">Budget Overview</span></h3>
+                            </div>
+                            <div class="budget-overview" id="budget-overview">
+                                <!-- Budget breakdown will be populated here -->
+                            </div>
+                        </section>
+                    </div>
+
+                    <aside class="detail-sidebar">
+                        <section class="card important-section">
+                            <div class="card-header">
+                                <h3><i class="fas fa-exclamation-circle"></i> <span data-i18n="trip.detail.important.title">Important Items</span></h3>
+                            </div>
+                            <div class="important-list" id="important-list"></div>
+                            <div class="form-group" style="margin-top:0.75rem;">
+                                <input id="important-input" type="text" class="" placeholder="">
+                                <div class="form-actions" style="justify-content:flex-start;padding-top:0.5rem;border-top:none;">
+                                    <button class="btn btn-secondary" onclick="addImportantItem()">
+                                        <i class="fas fa-plus"></i>
+                                        <span data-i18n="trip.detail.important.add">Add</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="card basic-info-section">
+                            <div class="card-header">
+                                <h3><i class="fas fa-info-circle"></i> <span data-i18n="trip.detail.basic.title">Trip Details</span></h3>
+                            </div>
+                            <div id="detail-basic" class="basic-info-content">
+                                <!-- Basic info will be populated here -->
+                            </div>
+                        </section>
+
+                        <section class="card sharing-section">
+                            <div class="card-header">
+                                <h3><i class="fas fa-share-alt"></i> <span data-i18n="trip.detail.sharing.title">Share Trip</span></h3>
+                            </div>
+                            <div class="sharing-content">
+                                <p data-i18n="trip.detail.sharing.description">Share this trip with friends and family</p>
+                                <div class="share-link-container">
+                                    <input type="text" id="share-link" readonly class="share-link-input">
+                                    <button class="btn btn-primary" onclick="copyShareLink()">
+                                        <i class="fas fa-copy"></i>
+                                        <span data-i18n="trip.detail.sharing.copy">Copy</span>
+                                    </button>
+                                </div>
+                                <div class="share-options">
+                                    <button class="btn btn-secondary share-btn" onclick="shareViaEmail()">
+                                        <i class="fas fa-envelope"></i>
+                                        <span data-i18n="trip.detail.sharing.email">Email</span>
+                                    </button>
+                                    <button class="btn btn-secondary share-btn" onclick="shareViaWhatsApp()">
+                                        <i class="fab fa-whatsapp"></i>
+                                        <span data-i18n="trip.detail.sharing.whatsapp">WhatsApp</span>
+                                    </button>
+                                    <button class="btn btn-secondary share-btn" onclick="shareViaTelegram()">
+                                        <i class="fab fa-telegram"></i>
+                                        <span data-i18n="trip.detail.sharing.telegram">Telegram</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
                     </aside>
                 </div>
             </main>
