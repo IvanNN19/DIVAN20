@@ -523,6 +523,67 @@ body {
     gap: 0.4rem;
 }
 
+/* Flight Tickets Section */
+.flight-tickets-section {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+}
+
+.flight-tickets-section h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+}
+
+.flight-tickets-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.flight-ticket-item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.flight-ticket-item .form-row {
+    margin-bottom: 0.75rem;
+}
+
+.flight-tickets-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    align-items: center;
+}
+
+.flight-total {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.flight-total strong {
+    color: var(--color-text);
+}
+
+.flight-total span {
+    color: var(--color-primary);
+    font-weight: 700;
+    margin-left: 0.5rem;
+}
+
 /* Responsive Design */
 @media (max-width: 900px) {
     .hero-section {
@@ -534,6 +595,26 @@ body {
 
     .detail-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .flight-tickets-section {
+        margin: 1rem 0;
+        padding: 1rem;
+    }
+    
+    .flight-ticket-item .form-row {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .flight-tickets-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .flight-tickets-actions .btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 

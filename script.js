@@ -47,6 +47,7 @@ const translations = {
         trip: {
             create: { title: "Create New Trip", subtitle: "Fill out the details below to start planning your adventure" },
             saveButton: "Save Trip",
+            updateButton: "Update Trip",
             form: {
                 basicInfo: {
                     title: "Basic Information", tripName: "Trip Name *", tripNamePlaceholder: "e.g., Summer in Paris",
@@ -56,6 +57,18 @@ const translations = {
                 },
                 budget: {
                     title: "Budget & Costs", totalBudget: "What's the budget? *", totalBudgetPlaceholder: "1000.00", currency: "Currency",
+                    flightTickets: {
+                        title: "Flight Tickets",
+                        passengerName: "Passenger Name",
+                        passengerNamePlaceholder: "e.g., John Doe",
+                        ticketCost: "Ticket Cost",
+                        ticketCostPlaceholder: "250.00",
+                        ticketLink: "Airline Ticket Link",
+                        ticketLinkPlaceholder: "https://airline.com/ticket/...",
+                        addTicket: "Add Another Ticket",
+                        removeTicket: "Remove Last Ticket",
+                        totalCost: "Total Flight Cost: "
+                    },
                     breakdown: {
                         title: "Budget Breakdown",
                         accommodation: "Accommodation", accommodationPlaceholder: "300.00",
@@ -93,7 +106,7 @@ const translations = {
         }
     },
     ru: {
-        app: { title: "Планировщик Путешествий" },
+        app: { title: "DIVAN" },
         nav: { newTrip: "Новое Путешествие", backToHome: "Назад на Главную" },
         home: {
             hero: {
@@ -114,6 +127,7 @@ const translations = {
         trip: {
             create: { title: "Создать Новое Путешествие", subtitle: "Заполните детали ниже, чтобы начать планирование вашего приключения" },
             saveButton: "Сохранить Поездку",
+            updateButton: "Сохранить Изменения",
             form: {
                 basicInfo: {
                     title: "Основная Информация", tripName: "Название Поездки *", tripNamePlaceholder: "например, Лето в Париже",
@@ -123,6 +137,18 @@ const translations = {
                 },
                 budget: {
                     title: "Бюджет и Расходы", totalBudget: "Какой бюджет? *", totalBudgetPlaceholder: "1000.00", currency: "Валюта",
+                    flightTickets: {
+                        title: "Билеты на Самолет",
+                        passengerName: "Имя Пассажира",
+                        passengerNamePlaceholder: "например, Джон Доу",
+                        ticketCost: "Стоимость Билета",
+                        ticketCostPlaceholder: "250.00",
+                        ticketLink: "Ссылка на Билет",
+                        ticketLinkPlaceholder: "https://airline.com/ticket/...",
+                        addTicket: "Добавить Еще Билет",
+                        removeTicket: "Удалить Последний Билет",
+                        totalCost: "Общая Стоимость Перелетов: "
+                    },
                     breakdown: {
                         title: "Детализация Бюджета",
                         accommodation: "Проживание", accommodationPlaceholder: "300.00",
@@ -235,11 +261,35 @@ function showHome() {
     loadTrips();
 }
 
-function showCreateTrip() {
+function showCreateTrip(tripData = null) {
     homeScreen.classList.remove('active');
-    createTripScreen.classList.add('active');
     tripDetailScreen.classList.remove('active');
-    setDefaultDates();
+    createTripScreen.classList.add('active');
+    
+    if (tripData) {
+        // Editing existing trip
+        populateFormWithTripData(tripData);
+        // Update button text
+        const saveButton = document.querySelector('#create-trip-screen .btn-primary');
+        if (saveButton) {
+            saveButton.innerHTML = '<i class="fas fa-save"></i><span data-i18n="trip.updateButton">Update Trip</span>';
+        }
+    } else {
+        // Creating new trip
+        resetForm();
+        setDefaultDates();
+        // Reset flight tickets to one empty ticket
+        const container = document.getElementById('flight-tickets-container');
+        if (container) {
+            container.innerHTML = '';
+            addFlightTicket();
+        }
+        // Reset button text
+        const saveButton = document.querySelector('#create-trip-screen .btn-primary');
+        if (saveButton) {
+            saveButton.innerHTML = '<i class="fas fa-check"></i><span data-i18n="trip.form.actions.create">Create Trip</span>';
+        }
+    }
 }
 
 function showTripDetail(trip) {
@@ -290,6 +340,13 @@ function setDefaultDates() {
 function resetForm() {
     if (tripForm) tripForm.reset();
     currentTripData = {};
+    
+    // Reset flight tickets to one empty ticket
+    const container = document.getElementById('flight-tickets-container');
+    if (container) {
+        container.innerHTML = '';
+        addFlightTicket();
+    }
 }
 
 // Validation
@@ -325,6 +382,9 @@ function collectTripData() {
     const tripData = {};
     for (const [key, value] of formData.entries()) tripData[key] = value;
 
+    // Add flight ticket data
+    tripData.flightTickets = getFlightTicketsData();
+
     return tripData;
 }
 
@@ -346,6 +406,7 @@ async function saveTrip() {
         tripDescription: td.tripDescription || null,
         mustSee: td.mustSee || null,
         additionalNotes: td.additionalNotes || null,
+        flightTickets: td.flightTickets || [],
         notes: '',
         important: [],
     };
@@ -392,7 +453,10 @@ function renderTripsList(trips) {
             <p><small>${trip.startDate} • ${trip.duration}d</small></p>
             <div class="form-actions" style="justify-content:flex-start;border-top:none;padding-top:0;margin-top:0.25rem;">
                 <button class="btn btn-secondary" onclick='showTripDetail(${JSON.stringify(trip).replace(/'/g, "&apos;")})'>
-                    <i class="fas fa-pen"></i> ${currentLanguage === 'ru' ? 'Открыть' : 'Open'}
+                    <i class="fas fa-eye"></i> ${currentLanguage === 'ru' ? 'Просмотр' : 'View'}
+                </button>
+                <button class="btn btn-primary" onclick='showCreateTrip(${JSON.stringify(trip).replace(/'/g, "&apos;")})'>
+                    <i class="fas fa-edit"></i> ${currentLanguage === 'ru' ? 'Редактировать' : 'Edit'}
                 </button>
             </div>`;
         container.appendChild(card);
@@ -482,12 +546,177 @@ function updateBudgetCalculation() {
     const tr = parseFloat(document.getElementById('transportation-budget').value) || 0;
     const f = parseFloat(document.getElementById('food-budget').value) || 0;
     const ac = parseFloat(document.getElementById('activities-budget').value) || 0;
-    const totalBreakdown = a + tr + f + ac;
+    
+    // Get flight ticket total
+    const flightTotal = parseFloat(document.getElementById('flight-total-cost').textContent) || 0;
+    
+    const totalBreakdown = a + tr + f + ac + flightTotal;
     const remaining = totalBudget - totalBreakdown;
     const remainingDisplay = document.getElementById('remaining-budget-display');
     if (remainingDisplay) {
         remainingDisplay.textContent = remaining.toFixed(2);
         remainingDisplay.style.color = remaining < 0 ? '#ef4444' : '#10b981';
+    }
+}
+
+// Flight Ticket Management
+function addFlightTicket() {
+    const container = document.getElementById('flight-tickets-container');
+    if (!container) return;
+    
+    const ticketItem = document.createElement('div');
+    ticketItem.className = 'flight-ticket-item';
+    
+    const currentLanguage = localStorage.getItem('travelLanguage') || 'en';
+    const translations = currentLanguage === 'ru' ? {
+        passengerName: 'Имя Пассажира',
+        passengerNamePlaceholder: 'например, Джон Доу',
+        ticketCost: 'Стоимость Билета',
+        ticketCostPlaceholder: '250.00',
+        ticketLink: 'Ссылка на Билет',
+        ticketLinkPlaceholder: 'https://airline.com/ticket/...'
+    } : {
+        passengerName: 'Passenger Name',
+        passengerNamePlaceholder: 'e.g., John Doe',
+        ticketCost: 'Ticket Cost',
+        ticketCostPlaceholder: '250.00',
+        ticketLink: 'Airline Ticket Link',
+        ticketLinkPlaceholder: 'https://airline.com/ticket/...'
+    };
+    
+    ticketItem.innerHTML = `
+        <div class="form-row">
+            <div class="form-group">
+                <label>${translations.passengerName}</label>
+                <input type="text" class="passenger-name" placeholder="${translations.passengerNamePlaceholder}">
+            </div>
+            <div class="form-group">
+                <label>${translations.ticketCost}</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                    <input type="number" class="ticket-cost" min="0" step="0.01" placeholder="${translations.ticketCostPlaceholder}">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>${translations.ticketLink}</label>
+            <input type="url" class="ticket-link" placeholder="${translations.ticketLinkPlaceholder}">
+        </div>
+    `;
+    
+    container.appendChild(ticketItem);
+    
+    // Add event listeners for cost calculation
+    const costInput = ticketItem.querySelector('.ticket-cost');
+    if (costInput) {
+        costInput.addEventListener('input', updateFlightTotal);
+    }
+    
+    // Show remove button if more than one ticket
+    const removeBtn = document.getElementById('remove-ticket-btn');
+    if (removeBtn && container.children.length > 1) {
+        removeBtn.style.display = 'inline-flex';
+    }
+}
+
+function removeFlightTicket() {
+    const container = document.getElementById('flight-tickets-container');
+    if (container.children.length > 1) {
+        container.removeChild(container.lastElementChild);
+        updateFlightTotal();
+        
+        // Hide remove button if only one ticket left
+        const removeBtn = document.getElementById('remove-ticket-btn');
+        if (container.children.length === 1) {
+            removeBtn.style.display = 'none';
+        }
+    }
+}
+
+function updateFlightTotal() {
+    const costInputs = document.querySelectorAll('.ticket-cost');
+    let total = 0;
+    
+    costInputs.forEach(input => {
+        const cost = parseFloat(input.value) || 0;
+        total += cost;
+    });
+    
+    const totalDisplay = document.getElementById('flight-total-cost');
+    if (totalDisplay) {
+        totalDisplay.textContent = total.toFixed(2);
+    }
+    
+    // Update overall budget calculation
+    updateBudgetCalculation();
+}
+
+function getFlightTicketsData() {
+    const tickets = [];
+    const ticketItems = document.querySelectorAll('.flight-ticket-item');
+    
+    ticketItems.forEach(item => {
+        const passengerName = item.querySelector('.passenger-name').value;
+        const ticketCost = parseFloat(item.querySelector('.ticket-cost').value) || 0;
+        const ticketLink = item.querySelector('.ticket-link').value;
+        
+        if (passengerName || ticketCost > 0 || ticketLink) {
+            tickets.push({
+                passengerName,
+                ticketCost,
+                ticketLink
+            });
+        }
+    });
+    
+    return tickets;
+}
+
+function loadFlightTicketsData(tickets) {
+    const container = document.getElementById('flight-tickets-container');
+    if (!container || !tickets || tickets.length === 0) return;
+    
+    // Clear existing tickets
+    container.innerHTML = '';
+    
+    tickets.forEach(ticket => {
+        addFlightTicket();
+        const lastTicket = container.lastElementChild;
+        if (lastTicket) {
+            lastTicket.querySelector('.passenger-name').value = ticket.passengerName || '';
+            lastTicket.querySelector('.ticket-cost').value = ticket.ticketCost || '';
+            lastTicket.querySelector('.ticket-link').value = ticket.ticketLink || '';
+        }
+    });
+    
+    // Update total
+    updateFlightTotal();
+    
+    // Show/hide remove button
+    const removeBtn = document.getElementById('remove-ticket-btn');
+    if (removeBtn) {
+        removeBtn.style.display = container.children.length > 1 ? 'inline-flex' : 'none';
+    }
+}
+
+function populateFormWithTripData(trip) {
+    // Populate basic fields
+    document.getElementById('trip-name').value = trip.tripName || '';
+    document.getElementById('destination').value = trip.destination || '';
+    document.getElementById('trip-type').value = trip.tripType || '';
+    document.getElementById('start-date').value = trip.startDate || '';
+    document.getElementById('duration').value = trip.duration || '';
+    document.getElementById('total-budget').value = trip.totalBudget || '';
+    document.getElementById('currency').value = trip.currency || 'USD';
+    document.getElementById('travelers-count').value = trip.travelersCount || '';
+    document.getElementById('accommodation-type').value = trip.accommodationType || '';
+    document.getElementById('trip-description').value = trip.tripDescription || '';
+    document.getElementById('must-see').value = trip.mustSee || '';
+    document.getElementById('additional-notes').value = trip.additionalNotes || '';
+    
+    // Load flight tickets
+    if (trip.flightTickets) {
+        loadFlightTicketsData(trip.flightTickets);
     }
 }
 
@@ -497,6 +726,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const input = document.getElementById(id);
         if (input) input.addEventListener('input', updateBudgetCalculation);
     });
+
+    // Add event listeners for initial flight ticket cost input
+    const initialTicketCost = document.querySelector('.ticket-cost');
+    if (initialTicketCost) {
+        initialTicketCost.addEventListener('input', updateFlightTotal);
+    }
 
     setDefaultDates();
     updateLanguageButtons();

@@ -196,6 +196,46 @@
                             </div>
                         </div>
 
+                        <!-- Flight Tickets Section -->
+                        <div class="flight-tickets-section">
+                            <h3 data-i18n="trip.form.budget.flightTickets.title">Flight Tickets</h3>
+                            <div class="flight-tickets-container" id="flight-tickets-container">
+                                <div class="flight-ticket-item">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label data-i18n="trip.form.budget.flightTickets.passengerName">Passenger Name</label>
+                                            <input type="text" class="passenger-name" data-i18n-placeholder="trip.form.budget.flightTickets.passengerNamePlaceholder">
+                                        </div>
+                                        <div class="form-group">
+                                            <label data-i18n="trip.form.budget.flightTickets.ticketCost">Ticket Cost</label>
+                                            <div class="input-with-icon">
+                                                <i class="fas fa-dollar-sign"></i>
+                                                <input type="number" class="ticket-cost" min="0" step="0.01" data-i18n-placeholder="trip.form.budget.flightTickets.ticketCostPlaceholder">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label data-i18n="trip.form.budget.flightTickets.ticketLink">Airline Ticket Link</label>
+                                        <input type="url" class="ticket-link" data-i18n-placeholder="trip.form.budget.flightTickets.ticketLinkPlaceholder">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flight-tickets-actions">
+                                <button type="button" class="btn btn-secondary" onclick="addFlightTicket()">
+                                    <i class="fas fa-plus"></i>
+                                    <span data-i18n="trip.form.budget.flightTickets.addTicket">Add Another Ticket</span>
+                                </button>
+                                <button type="button" class="btn btn-text" onclick="removeFlightTicket()" id="remove-ticket-btn" style="display: none;">
+                                    <i class="fas fa-minus"></i>
+                                    <span data-i18n="trip.form.budget.flightTickets.removeTicket">Remove Last Ticket</span>
+                                </button>
+                            </div>
+                            <div class="flight-total">
+                                <strong data-i18n="trip.form.budget.flightTickets.totalCost">Total Flight Cost: </strong>
+                                <span id="flight-total-cost">0.00</span>
+                            </div>
+                        </div>
+
                         <div class="budget-breakdown">
                             <h3 data-i18n="trip.form.budget.breakdown.title">Budget Breakdown</h3>
                             <div class="budget-items">
